@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="jquery-2.2.0.min.js"></script>
+    <script type="text/javascript">
+        var tokenData;
+
+        function getCSRFToken(){
+            $.ajax({
+                type: 'POST',
+                url: 'token_dispatcher.php'
+            }).done(function(data){
+                console.log('token request successful');
+                console.log(data);
+
+                tokenData = JSON.parse(data);
+
+                console.log(tokenData);
+                console.log(tokenData.csrfToken);
+
+                if (document.readyState == 'complete') {
+                    var tokenField = document.createElement("input");
+                    tokenField.setAttribute("type", "hidden");
+                    tokenField.setAttribute("name", "csrf_token");
+                    tokenField.setAttribute("value", tokenData.csrfToken);
+
+                    document.getElementById("addUserForm").appendChild(tokenField);
+                }
+            }).fail(function(data){
+                console.log('token request call failed');
+                console.log(data);
+            })
+        }
+    </script>
+</head>
+<body onload="getCSRFToken()">
+    <div align="center" class="container" style="width:30%">
+        <h1 align="center">Add User</h1>
+        <br>
+        <br>
+        <div align="center">
+            <form id="addUserForm" action="validate_token.php" method="POST">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input name="name" type="text" class="form-control" id="name">
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input name="email" type="text" class="form-control" id="email">
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">Insert</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
